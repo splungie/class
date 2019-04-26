@@ -114,7 +114,7 @@ if [ -s $logtmp ] ; then
       echo iptables -A FORWARD --src $scannerhosts --dst $scannedhosts -j ACCEPT >> $fwrules
   fi
 
-  echo "#SMURF attack protection:" >> $fwrules
+  echo "#Protection des attaques SMURF:" >> $fwrules
   echo iptables -A INPUT -p icmp -m icmp --icmp-type address-mask-request -j DROP >> $fwrules
   echo iptables -A INPUT -p icmp -m icmp --icmp-type timestamp-request -j DROP >> $fwrules
   echo iptables -A INPUT -p icmp -m icmp -m limit --limit 1/second -j ACCEPT >> $fwrules
@@ -124,18 +124,18 @@ if [ -s $logtmp ] ; then
   echo iptables -A FORWARD -m state --state INVALID -j DROP >> $fwrules
   echo iptables -A OUTPUT -m state --state INVALID -j DROP >> $fwrules
 
-  echo "#Flooding of RST packets, smurf attack Rejection:" >> $fwrules
+  echo "#Protection contre attaques RST:" >> $fwrules
   echo iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT >> $fwrules
 
   echo "#Prevention des portscans. Bloquage de 24 heures (3600 x 24 = 86400 Seconds):" >> $fwrules
   echo iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP >> $fwrules
   echo iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP >> $fwrules
 
-  echo "#Remove attacking IP after 24 hours:" >> $fwrules
+  echo "#Debloquer apres 24 heures:" >> $fwrules
   echo iptables -A INPUT -m recent --name portscan --remove >> $fwrules
   echo iptables -A FORWARD -m recent --name portscan --remove >> $fwrules
 
-  echo "#These rules add scanners to the portscan list, and log the attempt:" >> $fwrules
+  echo "#Ces regles regissent les portscan et les stoppent:" >> $fwrules
   echo iptables -A INPUT -p tcp -m tcp --dport 139 -m recent --name portscan --set -j LOG --log-prefix "portscan:" >> $fwrules
   echo iptables -A INPUT -p tcp -m tcp --dport 139 -m recent --name portscan --set -j DROP >> $fwrules
   echo iptables -A FORWARD -p tcp -m tcp --dport 139 -m recent --name portscan --set -j LOG --log-prefix "portscan:" >> $fwrules
