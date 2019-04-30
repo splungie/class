@@ -145,7 +145,7 @@ if [ -s $logtmp ] ; then
 
   cat $fwtmp | sort -u >> $fwrules
 
-  echo "#Other communication (denied) to log:" >> $fwrules
+  echo "#Autres communications dans le log:" >> $fwrules
   echo iptables -A INPUT -j LOG >> $fwrules
   echo iptables -A OUTPUT -j LOG >> $fwrules
   echo iptables -A FORWARD -j LOG >> $fwrules
